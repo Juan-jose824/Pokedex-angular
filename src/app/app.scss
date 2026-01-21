@@ -272,14 +272,58 @@ html, body {
   &.large { width: 300px; height: 300px; opacity: 0.05; } 
 }
 
-/* PAGINACION */
+/* PAGINACION CORREGIDA PARA MÓVIL */
 .pagination-controls {
-  display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 2rem 0;
-  span { font-size: 0.5rem; color: #2c3e50; }
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 1rem; 
+  /* Aumentamos el margen inferior para que no choque con el borde del cel */
+  margin: 2rem 0 4rem 0; 
+  padding: 0 1rem;
+  width: 100%;
+  
+  span { 
+    font-size: 0.5rem; 
+    color: #2c3e50;
+    text-align: center;
+    white-space: nowrap; /* Evita que el texto de página se amontone */
+  }
+  
   button { 
-    padding: 0.6rem 1rem; background: var(--pokedex-blue); color: white; 
-    border: 2px solid #1a252f; border-radius: 8px; font-size: 0.4rem; cursor: pointer;
-    &:disabled { background: #bdc3c7; border-color: #95a5a6; }
+    padding: 0.8rem 1rem; 
+    background: var(--pokedex-blue); 
+    color: white; 
+    border: 2px solid #1a252f; 
+    border-radius: 8px; 
+    font-size: 0.45rem; 
+    cursor: pointer;
+    flex-shrink: 0; /* Evita que el botón se haga pequeño */
+    
+    &:disabled { 
+      background: #bdc3c7; 
+      border-color: #95a5a6; 
+      cursor: not-allowed; 
+    }
+
+    &:active {
+      transform: scale(0.95); /* Efecto visual al tocar en el cel */
+    }
+  }
+}
+
+/* AJUSTE EXTRA PARA PANTALLAS PEQUEÑAS */
+@media (max-width: 480px) {
+  .pagination-controls {
+    gap: 0.5rem;
+    /* Bajamos un poco más la fuente para que quepa todo en una línea */
+    button {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.4rem;
+    }
+    span {
+      font-size: 0.4rem;
+    }
   }
 }
 
