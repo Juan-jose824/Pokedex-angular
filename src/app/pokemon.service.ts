@@ -21,4 +21,9 @@ getPokemonList(limit: number = 154, offset: number = 0) {
   getPokemonDetail(nameOrId: string | number) {
     return this.http.get(`${this.baseUrl}/pokemon/${nameOrId}`);
   }
+
+  // pokemon.service.ts
+getPokemonByType(type: string) {
+  return this.http.get(`${this.baseUrl}/type/${type}`);
+}
 }

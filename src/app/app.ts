@@ -101,21 +101,49 @@ export class App implements OnInit {
   /**
    * Filtra la lista actual (los 154 cargados) según el tipo seleccionado
    */
-  filtrarPorTipo(tipo: string) {
-    this.tipoActivo.set(tipo);
-    this.selectedPokemon.set(null); // Cierra el detalle si estaba abierto
-    
-    if (tipo === 'todos') {
-      this.pokemonList.set(this.fullPokemonList); // Muestra todos los de la página
-    } else {
-      // Filtra el arreglo buscando el tipo dentro de la propiedad 'types'
-      const filtrados = this.fullPokemonList.filter(p => 
-        p.types.some((t: any) => t.type.name === tipo)
-      );
-      this.pokemonList.set(filtrados);
-    }
-  }
+ // app.ts
 
+filtrarPorTipo(tipo: string) {
+  this.tipoActivo.set(tipo);
+  this.selectedPokemon.set(null);
+
+  if (tipo === 'todos') {
+    // Si elige "todos", volvemos a la carga paginada normal (página 1)
+    this.cargarPagina(0);
+  } else {
+    // Iniciamos estado de carga
+    this.isLoading.set(true);
+
+    this.pokemonService.getPokemonByType(tipo).subscribe({
+      next: (res: any) => {
+        // Extraemos solo la info básica del pokemon de la respuesta
+        const pokemonSpecs = res.pokemon.map((p: any) => p.pokemon);
+
+        // Creamos las peticiones de detalle para TODOS los de este tipo
+        const requests = pokemonSpecs.map((p: any) => 
+          this.pokemonService.getPokemonDetail(p.name)
+        );
+
+        // Ejecutamos todas las peticiones en paralelo
+        forkJoin(requests).subscribe({
+          next: (details: any) => {
+            this.pokemonList.set(details); // Mostramos la lista completa del tipo
+            this.isLoading.set(false);
+            
+            // Scroll al inicio
+            const container = document.querySelector('.main-content');
+            if (container) container.scrollTop = 0;
+          },
+          error: () => this.isLoading.set(false)
+        });
+      },
+      error: () => {
+        this.isLoading.set(false);
+        alert('Error al cargar pokémon por tipo');
+      }
+    });
+  }
+}
   /**
    * Busca un Pokémon específico por nombre o ID directamente en la API
    */
