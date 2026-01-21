@@ -1,5 +1,4 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PokemonService } from './pokemon.service';
 import { forkJoin } from 'rxjs';
@@ -7,7 +6,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
