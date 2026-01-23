@@ -22,9 +22,15 @@
 
   <main class="main-content">
     <div class="pokedex-header">
-      <h1>POKÉDEX</h1>
-      <div class="header-line"></div>
+  <div class="header-top">
+    <h1>POKÉDEX</h1>
+    <div class="type-counter">
+      {{ tipoActivo() === 'todos' ? 'TOTAL' : (tipoActivo() | uppercase) }} 
+      <span>{{ totalResultados() }}</span>
     </div>
+  </div>
+  <div class="header-line"></div>
+</div>
 
     <header class="search-bar" [style.display]="selectedPokemon() ? 'none' : 'flex'">
       <input #pokemonInput type="text" placeholder="Busca nombre o ID..." (keyup.enter)="buscarPokemon(pokemonInput.value)">
@@ -46,7 +52,7 @@
             <p>Altura: {{ selectedPokemon().height / 10 }}m | Peso: {{ selectedPokemon().weight / 10 }}kg</p>
           </div>
           <div class="image-column">
-            <img [src]="selectedPokemon().sprites.other['official-artwork'].front_default || selectedPokemon().sprites.front_default" loading="lazy">
+            <img [src]="selectedPokemon().sprites.other['official-artwork'].front_default">
           </div>
           <div class="stats-column">
             <h3>Stats</h3>
@@ -60,7 +66,16 @@
         </div>
       </div>
     }
+
     <div class="pokemon-grid" [style.display]="selectedPokemon() ? 'none' : 'grid'">
+      
+      @if (isLoading() && pokemonList().length === 0) {
+        <div class="loading-state">
+          <div class="pokeball-loader"></div>
+          <p>CARGANDO DATOS...</p>
+        </div>
+      }
+
       @for (p of pokemonList(); track p.id) {
         <div class="pokemon-card" (click)="verDetalle(p)" [style.background-color]="getPokemonColor(p)">
           <div class="pokeball-bg"></div>
@@ -76,11 +91,13 @@
       }
     </div>
 
-    @if (!selectedPokemon() && tipoActivo() === 'todos') {
+    @if (!selectedPokemon() && tipoActivo() !== 'Búsqueda') {
       <div class="pagination-controls">
-        <button (click)="anteriorPagina()" [disabled]="paginaActual() === 0">ANTERIOR</button>
-        <span>PÁGINA {{ paginaActual() + 1 }}</span>
-        <button (click)="siguientePagina()" [disabled]="(paginaActual() + 1) * pokemonPorPagina >= totalPokemon">SIGUIENTE</button>
+        <button (click)="anteriorPagina()" [disabled]="paginaActual() === 0 || isLoading()">ANTERIOR</button>
+        <div class="page-info">
+          <span>PÁGINA {{ paginaActual() + 1 }} DE {{ totalPaginas() }}</span>
+        </div>
+        <button (click)="siguientePagina()" [disabled]="(paginaActual() + 1) * pokemonPorPagina >= totalResultados() || isLoading()">SIGUIENTE</button>
       </div>
     }
   </main>
